@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+
+{% block body %}
+{%if loggedin %}
+<main class="container py-5 text-center">
+    <h3>Welcome {{username}}!</h3>
+    <h3>You have {{cash}}$</h3>
+</main>
+{%else %}
+<h1>You cannot access this without logging in!</h1>
+{% endif %}
+{% endblock %}

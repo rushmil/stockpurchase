@@ -1,0 +1,73 @@
+{% extends "layout.html" %}
+
+{% block body %}
+{%if loggedin %}
+<div style="text-align: center;">
+    <h1>Portfolio</h1>
+    <h2>Total invested amount: {{inv}} | Total assets: {{assets}}</h2>
+</div>
+<div style="display: flex; margin-top: 5vh;">
+    <div style="width: 30%; margin: left; flex-grow: 1;"><canvas id="myChart"></canvas></div>
+
+    <div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Symbol</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">shares</th>
+                    <th scope="col">Purchased Share Price</th>
+                    <th scope="col">Purchased Price</th>
+                    <th scope="col">Current Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for asset in result %}
+                <tr>
+                    <td>{{asset[6]}}</td>
+                    <td>{{asset[2]}}</td>
+                    <td>{{asset[4]}}</td>
+                    <td>{{asset[3]}}</td>
+                    <td>{{asset[5]}}</td>
+                    <td>{{asset[7]}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    var ctx = document.getElementById('myChart').getContext('2d');
+    name = {{ name | tojson }}
+    y = {{ y | tojson }}
+    colors = {{ colors | tojson }}
+
+    console.log("Name:", name.split(','));  // Debugging to ensure the data is correctly passed
+    console.log("Y:", typeof y);        // Debugging to ensure the data is correctly passed
+    console.log("Colors:", colors);  // Debugging to ensure the data is correctly passed
+
+    var myChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: name.split(','),
+            datasets: [{
+                label: 'Assets',
+                data: y,
+                backgroundColor: colors
+            }]
+        },
+        options: {
+            legend: {
+                labels: {
+                    fontColor: "white",
+                    fontSize: 18
+                }
+            }
+        }
+    });
+</script>
+{%else %}
+<h1>You cannot access this without logging in!</h1>
+{% endif %}
+{% endblock %}

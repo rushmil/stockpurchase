@@ -1,0 +1,15 @@
+{% extends "layout.html" %} {% block body %} {% if loggedin %}
+
+<main class="container py-5 text-center">
+    <h3 class="text-center">Deposit</h3>
+    <form action="/deposit" method="post">
+        <div class="user-box">
+            <input autocomplete="off" type="number" name="money" required type="number" />
+            <label>Amount</label>
+        </div>
+        <button class="btn btn-primary" type="submit">Deposit</button>
+    </form>
+</main>
+{% else %}
+<h1>You cannot access this without logging in!</h1>
+{% endif %} {% endblock %}

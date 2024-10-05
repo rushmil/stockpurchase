@@ -1,0 +1,146 @@
+{% extends "layout.html" %}
+
+{% block body %}
+
+{% if loggedin %}
+
+<main class="container1 py-5 text-center">
+    <h2>Stock Visualizer</h2>
+    <form action="/visual" method="post">
+        <div class="mb-3">
+            <input name="symbol" type="text" placeholder="Symbol:" class="form-control mx-auto w-auto"
+                id="validationDefault02" required>
+        </div>
+        <div class="mb-3">
+            <input name="shares" type="number" placeholder="Shares:" class="form-control mx-auto w-auto"
+                id="validationDefault02" required>
+        </div>
+        <div class="mb-3">
+            <input name="period" type="number" placeholder="Period (in years):" class="form-control mx-auto w-auto"
+                id="validationDefault02" required>
+        </div>
+        <button type="submit" class="btn btn-primary" style="margin: 0 auto; display: block;">visual</button>
+    </form>
+</main>
+
+<div class="jumbotron">
+    <table class="table table-striped-columns">
+        <tr>
+            <td colspan="1">Current <b>{{name}} Price:</b> {{Price}}</td>
+            <td colspan="2"><u>Price in <b>{{period}} years:</b></u> {{pdata}}</td>
+        </tr>
+        <tr>
+            <td colspan="1">Current Price of <b>{{shares}} shares:</b> {{SPrice}}</td>
+            <td colspan="2">Predicted Price of <b>{{shares}} shares</b> in <b>{{period}} years:</b> {{tpdata}}
+            </td>
+        </tr>
+    </table>
+
+</div>
+
+<div id="container" class="chart"></div>
+<div id="container1" class="chart"></div>
+
+<script>
+    var chartdata = []
+    var volume = []
+    var fchartdata = []
+
+    function getStock() {
+
+        $.getJSON('/pipe', function (datas) {
+            var data = JSON.parse(datas.res);
+            var fdata = JSON.parse(datas.fore)
+
+            for (var i = 0; i < data.length; i++) {
+                chartdata.push([
+                    data[i].Date,
+                    data[i].Open,
+                    data[i].High,
+                    data[i].Low,
+                    data[i].Close
+                ]);
+                volume.push([
+                    data[i].Date,
+                    data[i].Volume
+                ])
+            }
+            for (var i = 0; i < fdata.length; i++) {
+                fchartdata.push([
+                    fdata[i].ds,
+                    fdata[i].yhat
+                ])
+            }
+
+            plotCharts();
+        });
+    }
+
+    function plotCharts(name) {
+        Highcharts.stockChart('container', {
+            navigation: {
+                bindings: {
+                    rect: {
+                        annotationsOptions: {
+                            shapeOptions: {
+                                fill: 'rgba(255, 0, 0, 0.8)'
+                            }
+                        }
+                    }
+                },
+                annotationsOptions: {
+                    typeOptions: {
+                        line: {
+                            stroke: 'rgba(255, 0, 0, 1)',
+                            strokeWidth: 10
+                        }
+                    }
+                }
+            },
+            yAxis: [{
+                labels: {
+                    align: 'left'
+                },
+                height: '80%'
+            }, {
+                labels: {
+                    align: 'left'
+                },
+                top: '80%',
+                height: '20%',
+                offset: 0
+            }],
+            series: [{
+                type: 'line',
+                id: 'aapl-ohlc',
+                name: 'Original data',
+                data: chartdata,
+                turboThreshold: 1000000
+            }, {
+                type: 'line',
+                id: 'aapl-ohlc',
+                name: 'Predicted data',
+                data: fchartdata,
+                turboThreshold: 1000000
+            }, {
+                type: 'column',
+                id: 'aapl-volume',
+                name: ' Volume',
+                data: volume,
+                yAxis: 1,
+                turboThreshold: 1000000
+            }]
+        });
+    }
+
+
+    $(document).ready(function () {
+        getStock()
+        plotCharts()
+    })
+
+</script>
+{% else %}
+<h1>You cannot access this without logging in!</h1>
+{% endif %}
+{% endblock %}

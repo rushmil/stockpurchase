@@ -1,0 +1,22 @@
+{% extends "layout.html" %} {% block body %}
+
+<main class="container py-5 text-center">
+    <h3 class="text-center">Login</h3>
+    {% if error %}
+    <p style="color: red">{{ error }}</p>
+    </p>
+    {% endif %}
+    <form method="POST" action="/login">
+        <div class="mb-3">
+            <input autocomplete="off" autofocus name="username" placeholder="Username" type="text"
+                class="form-control mx-auto w-auto" />
+        </div>
+        <div class="mb-3">
+            <input autocomplete="off" autofocus name="password" placeholder="Password" type="password"
+                class="form-control mx-auto w-auto" />
+        </div>
+        <button class="btn btn-primary" type="submit">Login</button>
+    </form>
+</main>
+
+{% endblock %}
